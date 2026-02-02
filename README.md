@@ -48,15 +48,18 @@ Add the following secrets in your GitHub repository settings:
 
 - **SSH_IP_EC2** → Public IP of your EC2 instance
 - **SSH_KEY_EC2** → Private SSH key for your EC2 instance
-
 ## 📂 Deployment Steps
 
 1. Launch an Amazon EC2 instance (Amazon Linux or Ubuntu recommended)
 2. Install Node.js and npm on the EC2 instance
 3. Clone your project into `/home/ec2-user/ExampleWebApp`
 4. Configure Nginx or Apache to serve files from `/var/www/html/`
-5. Push changes to the `master` branch → GitHub Actions will:
-     - Pull latest code
-     - Install dependencies
-     - Build the React app
-     - Sync build output (`dist/`) to `/var/www/html/`
+5. Configure Security Groups:
+    - Allow **HTTP (port 80)** from your IP only (for dev purposes)
+    - Allow **SSH (port 22)** from anywhere `0.0.0.0/0` (for GitHub Actions access)
+6. Push changes to the `master` branch → GitHub Actions will:
+    - Pull latest code
+    - Install dependencies
+    - Build the React app
+    - Sync build output (`dist/`) to `/var/www/html/`
+
