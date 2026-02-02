@@ -25,7 +25,7 @@ jobs:
             git pull
             npm install
             npm run build
-            sudo -rf /var/www/html/*
+            sudo rm -rf /var/www/html/*
             sudo mv ./dist/* /var/www/html
             
 
