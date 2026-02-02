@@ -1,16 +1,62 @@
-# React + Vite
+# Deployment to EC2 Instance of Amazon
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project demonstrates automated deployment of a React application to an **Amazon EC2 instance** using **GitHub Actions**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ⚙️ GitHub Actions Workflow
 
-## React Compiler
+The workflow runs on every push to the `master` branch.  
+It connects to your EC2 instance via SSH and deploys the latest build.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### `.github/workflows/deploy.yml`
 
-## Expanding the ESLint configuration
+```yaml
+name: Deployment to EC2 instance of Amazon
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Code
+                uses: actions/checkout@v4
+
+            - name: Deploy via SSH
+                uses: appleboy/ssh-action@v1.0.3
+                with: 
+                    host: ${{ secrets.SSH_IP_EC2 }}
+                    username: ec2-user
+                    key: ${{ secrets.SSH_KEY_EC2 }}
+                    port: 22
+                    script: |
+                        cd /home/ec2-user/ExampleWebApp
+                        git pull
+                        npm install
+                        npm run build
+                        sudo rsync -av --delete ./dist/ /var/www/html/
+```
+
+## 🔑 Required Secrets
+
+Add the following secrets in your GitHub repository settings:
+
+- **SSH_IP_EC2** → Public IP of your EC2 instance
+- **SSH_KEY_EC2** → Private SSH key for your EC2 instance
+
+## 📂 Deployment Steps
+
+1. Launch an Amazon EC2 instance (Amazon Linux or Ubuntu recommended)
+2. Install Node.js and npm on the EC2 instance
+3. Clone your project into `/home/ec2-user/ExampleWebApp`
+4. Configure Nginx or Apache to serve files from `/var/www/html/`
+5. Push changes to the `master` branch → GitHub Actions will:
+     - Pull latest code
+     - Install dependencies
+     - Build the React app
+     - Sync build output (`dist/`) to `/var/www/html/`
