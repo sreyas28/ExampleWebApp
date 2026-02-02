@@ -1,34 +1,46 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [message, setMessage] = useState("")
+
+  // Example fetch to backend
+  const fetchMessage = async () => {
+    try {
+      const res = await fetch("/api/test") // adjust to your backend route
+      const data = await res.json()
+      setMessage(data.message)
+    } catch (err) {
+      setMessage("Error fetching from backend or Backend is not Setup")
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold text-blue-600 mb-6">
+        Hello from the FrontEnd 🚀
+      </h1>
+
+      <button
+        onClick={() => setCount(count + 1)}
+        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+      >
+        Count is {count}
+      </button>
+
+      <button
+        onClick={fetchMessage}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+      >
+        Fetch from Backend
+      </button>
+
+      {message && (
+        <p className="mt-4 text-lg text-gray-700">
+          Backend says: {message}
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      )}
+    </div>
   )
 }
 
