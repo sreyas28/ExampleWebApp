@@ -9,6 +9,7 @@ function App() {
     try {
       const res = await fetch("http://13.201.77.105:9091/reply") // adjust to your backend route
       const data = await res.json()
+      console.log(data)
       setMessage(data.message)
     } catch (err) {
       setMessage("Error fetching from backend or Backend is not Setup")
