@@ -7,7 +7,7 @@ function App() {
   // Example fetch to backend
   const fetchMessage = async () => {
     try {
-      const res = await fetch("/api/test") // adjust to your backend route
+      const res = await fetch("http://13.201.77.105:9091/reply") // adjust to your backend route
       const data = await res.json()
       setMessage(data.message)
     } catch (err) {
